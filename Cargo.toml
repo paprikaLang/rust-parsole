@@ -1,0 +1,6 @@
+[package]
+name = "parsole"
+version = "0.1.0"
+authors = ["paprikaLang <3060866223@qq.com>"]
+
+[dependencies]
