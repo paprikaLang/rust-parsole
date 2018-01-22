@@ -5,3 +5,4 @@ authors = ["paprikaLang <3060866223@qq.com>"]
 
 [dependencies]
 clap = "2.29"
+reqwest = "0.8"
