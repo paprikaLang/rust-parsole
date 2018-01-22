@@ -6,6 +6,8 @@ extern crate serde;
 extern crate serde_derive;
 extern crate serde_json;
 
+#[macro_use]
+extern crate prettytable;
 pub static URL: &str = "https://newsapi.org/v2/sources?language=en&apiKey=c16fc7641ca44e0f85995fbbe7a5ae09";
 use clap::App;
 
@@ -43,7 +45,24 @@ fn get_feed() -> Feed {
 fn print_count(feed: &Feed) {
     println!("Number of posts: {}",feed.sources.len());
 }
-
+fn print_feed_table<'feed, I: Iterator<Item = &'feed FeedItem>>(items: I) {
+	let mut table = prettytable::Table::new();
+	table.add_row(row!["Name","Desc","URL"]);
+	for item in items {
+	    let name = if item.name.len() >= 50 {
+	    	&item.name[0..49]
+	    }else{
+	    	&item.name
+	    };
+	    let desc = if item.description.len() >= 50 {
+	    	&item.description[0..49]
+	    }else{
+	    	&item.description
+	    };
+	    table.add_row(row![name,desc,item.url]);
+	}
+	table.printstd();
+}
 fn main() {
 	let app = App::new("parsole")
 	    .version("0.1")
@@ -58,6 +77,14 @@ fn main() {
     let feed = get_feed();
     if matches.is_present("count") {
         print_count(&feed);
+    }else{
+    	let iter = feed.sources.iter();
+    	if let Some(string) = matches.value_of("number") {
+    		let number = string.parse().unwrap();
+    		print_feed_table(iter.take(number))
+    	}else {
+    		print_feed_table(iter)
+    	}
     }
     
 }
