@@ -1,4 +1,5 @@
 extern crate clap;
+use clap::{Arg};
 extern crate reqwest;
 extern crate serde;
 #[macro_use]
@@ -39,14 +40,24 @@ fn get_feed() -> Feed {
     serde_json::from_str(&data).unwrap()
 }
 
+fn print_count(feed: &Feed) {
+    println!("Number of posts: {}",feed.sources.len());
+}
+
 fn main() {
 	let app = App::new("parsole")
 	    .version("0.1")
 	    .author("paprikaLang")
 	    .about("Read JSON")
-	    .arg_from_usage("-n, --number=[NUMBER] 'Only print the NUMBER most recent posts'
-	    	             -c, --count           'Show the count of posts'");
-	let _matches = app.get_matches();
-    let _feed = get_feed();
+	    .arg(Arg::with_name("count")
+	    	 .short("c")
+	    	 .long("count")
+	    	 .help("Show the count of posts"))
+	    .arg_from_usage("-n, --number=[NUMBER] 'Only print the NUMBER most recent posts'");
+	let matches = app.get_matches();
+    let feed = get_feed();
+    if matches.is_present("count") {
+        print_count(&feed);
+    }
     
 }
